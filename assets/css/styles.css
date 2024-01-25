@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Preahvihear&display=swap');
+
+.columna{
+    background-color: #000000;
+}
+
+.columna img{
+    width: 100%;
+    padding: 10px;
+}
+
+.spacing{
+    margin: 10px;
+}
+
+h3{
+    font-family: 'Preahvihear', sans-serif;
+    font-size: 50px;
+
+}
+
+h3{
+    padding: 5px;
+}
+
+.info_curso{
+    background-color: rgba(0, 0, 0, .7);
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    color: aqua;
+    padding-left: 10px;
+    padding-right: 10px;
+}
