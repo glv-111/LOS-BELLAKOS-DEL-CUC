@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
     <link rel="stylesheet" href="../assets/css/footer.css">
     <link rel="stylesheet" href="../assets/css/contactus.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 </head>
 <body>
@@ -37,8 +38,12 @@
       </nav>
 
       <main>
+         <div id = "alert" class="alert alert-default" role="alert">
+            
+         </div>
         <div class="container">
-            <form action="../controlador/clientesController.php" method="post">
+            <form id = "frmContacto">
+               <input type="hidden" name="hddIdComentario" id="hddIdComentario">
                 <div class="form-group">
                     <label for="txtNombre">Nombre completo</label>
                     <input id="txtNombre" name="txtNombre" class="form-control" type="text">
@@ -55,9 +60,28 @@
                     <label for="txtComentarios">Comentarios</label>
                      <textarea id="txtComentarios" name="txtComentarios" class="form-control" type="text"> </textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Enviar Comentarios</button>
-                <button type="button" class="btn btn-secondary">Regresar</button>
+                <button type="button" id="btnInsertar" class="btn btn-primary">Enviar Comentarios</button>
+                <button type="button" id="btnActualizar" class="btn btn-success">Actualizar Comentarios</button>
+                <button type="button" class="btn btn-danger">Regresar</button>
             </form>
+
+            <table class="table table-striped">
+               <thead>
+                 <tr>
+                   <th scope="col">#</th>
+                   <th scope="col">Nombre</th>
+                   <th scope="col">Correo</th>
+                   <th scope="col">Telefono</th>
+                   <th scope="col">Comentario</th>
+                   <th></th>
+                 </tr>
+               </thead>
+               <tbody id="tblComentarios">
+
+                 
+               </tbody>
+             </table>
+
         </div>
       </main>
 
@@ -261,5 +285,104 @@
 </body>
 </html>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+<script>
+   //document.getElementById('txtNombre').value = "Hola tilin";
+   function actualizar( idcomentario, nombre, correo, telefono, comentario){
+      //JS
+      /*document.geElementById("txtNombre").value = nombre;
+      document.geElementById("txtCorreo").value = email;
+      document.geElementById("txtTelefono").value = telefono;
+      document.geElementById("txtComentario").value = comentarios;*/
+      
+
+      //JQuery
+      $('#btnActualizar').show();
+      $('#btnInsertar').hide();
+      $('#hddIdComentario').prop("value",idcomentario);
+      $('#txtNombre').prop("value",nombre);
+      $('#txtCorreo').prop("value",correo);
+      $('#txtTelefono').prop("value",telefono);
+      $('#txtComentarios').prop("value",comentario);
+
+
+   }
+
+   function eliminar(idComentario){    
+       if(confirm("Deseas eliminar el comentario seleccionado?")){
+          $.ajax({
+             type: "POST",
+             data: {"idComentario" : idComentario},
+             url: "../controlador/clientesController.php?opc=3",
+             success: function(data){
+                $('#alert').show();
+                $('#alert').text(data);
+                if( data == "Borrado correctamente" ){
+                   $('#alert').addClass("alert-success");
+                   getComments();
+               } else{
+                   $('#alert').addClass("alert-danger");
+               }
+            }
+         });
+      }
+   }
+
+   function getComments(){
+      $.ajax({
+               type: "POST",
+               url: "../controlador/clientesController.php?opc=4",
+               success: function(data){
+                  $("#tblComentarios").html(data);
+               }
+            });
+   }
+
+   $(document).ready(function(){
+      $('#btnActualizar').hide();
+      $('#alert').hide();
+
+      getComments();
+
+      $('#btnInsertar').click(
+         function(){
+            var formData = $('#frmContacto').serialize();
+            $.ajax({
+               type: "POST",
+               data: formData,
+               url: "../controlador/clientesController.php?opc=1",
+               success: function(data){
+                  $('#alert').show();
+                     $('#alert').text(data);
+                  if( data == "Registro insertado" ){
+                     $('#alert').addClass("alert-success");
+                     getComments();
+                  } else{
+                     $('#alert').addClass("alert-danger");
+                  }
+               }
+            });
+         }
+      );
+
+      $('#btnActualizar').click(
+         function(){
+            var formData = $('#frmContacto').serialize();
+            $.ajax({
+               type: "POST",
+               data: formData,
+               url: "../controlador/clientesController.php?opc=2",
+               success: function(data){
+                  $('#alert').show();
+                     $('#alert').text(data);
+                  if( data == "Se actualizo correctamente el registro" ){
+                     $('#alert').addClass("alert-success");
+                     getComments();
+                  } else{
+                     $('#alert').addClass("alert-danger");
+                  }
+               }
+            });
+         }
+      );
+   });
+</script>
